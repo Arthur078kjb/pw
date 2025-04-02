@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Alunos</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background-color: aqua;
+          
+
+        }
+        ul {
+            list-style-type: none;
+            padding-inline: 0;
+        }
+        li {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: whitesmoke;
+        }
+        .concluida {
+            text-decoration: line-through;
+            color: gray;
+        }
+        .b1 {
+            background-color: cornflowerblue;
+        }
+        input[type="number"] {
+            margin-top: 10px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="lista">
+    <h2>Lista de Alunos</h2>
+    <input type="text" id="alunoInput" placeholder="Digite o nome do aluno">
+    <input type="number" id="chamadaInput" placeholder="Número da Chamada">
+    <button onclick="adicionarAluno()" id="b1">Adicionar</button>
+    <button onclick="limparAlunos()">Limpar tudo</button>
+    <ul id="listaAlunos"></ul>
+    </div>
+
+    <script>
+        function carregarAlunos() {
+            renderizarAlunos();
+        }
+
+        function renderizarAlunos() {
+            let lista = document.getElementById("listaAlunos");
+            lista.innerHTML = "";
+
+            let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+
+            alunos.forEach((aluno, index) => {
+                let li = document.createElement("li");
+                li.classList.toggle("concluida", aluno.concluido);
+
+                let textoAluno = document.createElement("span");
+                textoAluno.textContent = `Chamada ${aluno.chamada}: ${aluno.nome}`;
+                li.appendChild(textoAluno);
+
+                let botaoExcluir = document.createElement("button");
+                botaoExcluir.textContent = "Excluir";
+                botaoExcluir.onclick = function() {
+                    excluirAluno(index);
+                };
+                li.appendChild(botaoExcluir);
+
+                lista.appendChild(li);
+            });
+        }
+
+        function adicionarAluno() {
+            let nomeInput = document.getElementById("alunoInput");
+            let chamadaInput = document.getElementById("chamadaInput");
+
+            let nome = nomeInput.value.trim();
+            let chamada = chamadaInput.value.trim();
+
+            if (nome === "" || chamada === "") return;
+
+            let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+            alunos.push({ nome, chamada: chamada, concluido: false });
+
+            localStorage.setItem("alunos", JSON.stringify(alunos));
+
+            nomeInput.value = "";
+            chamadaInput.value = "";
+            renderizarAlunos();
+        }
+
+        function excluirAluno(index) {
+            let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+            alunos.splice(index, 1);
+            localStorage.setItem("alunos", JSON.stringify(alunos));
+            renderizarAlunos();
+        }
+
+        function limparAlunos() {
+            localStorage.removeItem("alunos");
+            renderizarAlunos();
+        }
+
+        carregarAlunos();
+    </script>
+</body>
+</html>
